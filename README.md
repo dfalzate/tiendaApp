@@ -2,9 +2,11 @@
 
 ## Frontend
 
-Relizado con React, Hooks y Context, Axios y Bootstrap.
+Relizado con React, Hooks, Context, Axios y Bootstrap.
 
 ## Archivo .env
+
+1. Parametros necesarios
 
 `REACT_APP_SERVER` Link al servidor
 
@@ -14,9 +16,11 @@ Relizado con React, Hooks y Context, Axios y Bootstrap.
 
 ## Server
 
-Aunque no fue solicitado lo hice para test del frontend, realizado con Nodejs, Express y MongoDB
+El frontend fué realizado con Nodejs, Express y MongoDB
 
 ## Archivo .env
+
+1. Parametros necesarios
 
 `MongoDB_URI` URL de conexion a MongoDB
 `PORT` Puerto para iniciar el servidor
