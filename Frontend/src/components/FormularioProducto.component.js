@@ -22,6 +22,7 @@ function FormularioComponent(props) {
 					id='select'
 					className='form-control'
 					required
+					defaultValue=''
 					onChange={props.onChangeTalla}
 					value={props.valueTalla}
 				>

@@ -1,13 +1,12 @@
 import React from 'react';
 import ProductosContext from '../context/productos.context';
-import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import SeleccionarProducto from '../components/SeleccionarProducto.component';
 import Formulario from '../components/FormularioProducto.component';
 
 function EditarProductoPage() {
-	const { productos, setProductos } = React.useContext(ProductosContext);
+	const { productos, setProductos, setMarcas } = React.useContext(ProductosContext);
 	const [_id, set_id] = React.useState('');
 	const [observaciones, setObservaciones] = React.useState('');
 	const [talla, setTalla] = React.useState('');
@@ -16,6 +15,13 @@ function EditarProductoPage() {
 	const [fechaEmbarque, setFechaEmbarque] = React.useState();
 
 	let history = useHistory();
+
+	React.useEffect(() => {
+		const products = JSON.parse(sessionStorage.getItem('productos'));
+		setProductos(products);
+		const brands = JSON.parse(sessionStorage.getItem('marcas'));
+		setMarcas(brands);
+	}, []);
 
 	function handleSeleccionarProducto(event) {
 		const productID = event.target.value;
@@ -29,7 +35,7 @@ function EditarProductoPage() {
 		date.setTime(Date.parse(product[0].fechaEmbarque));
 		setFechaEmbarque(
 			`${date.getUTCFullYear()}-${
-				date.getUTCMonth() < 10 ? `0${date.getUTCMonth()}` : date.getUTCMonth()
+				date.getUTCMonth() < 10 ? `0${date.getUTCMonth() + 1}` : date.getUTCMonth() + 1
 			}-${date.getUTCDate()}`
 		);
 	}
@@ -43,19 +49,23 @@ function EditarProductoPage() {
 			inventario,
 			fechaEmbarque,
 		};
-		console.log(product, _id);
-		// const response = await axios({
-		// 	method: 'post',
-		// 	url: `${process.env.REACT_APP_SERVER}/productos/`,
-		// 	data: product,
-		// });
-		// if (response.status === 200) {
-		// 	setProductos(...productos, response.data);
-		// 	alert('Producto creado correctamente');
-		// 	history.push('/');
-		// } else {
-		// 	console.log('Bad request');
-		// }
+
+		const response = await axios({
+			method: 'put',
+			url: `${process.env.REACT_APP_SERVER}/productos/producto/${_id}`,
+			data: product,
+		});
+		if (response.status === 200) {
+			const producto = productos.filter((producto) => producto._id === _id)[0];
+			const index = productos.indexOf(producto);
+			productos[index] = response.data;
+			setProductos(productos);
+			sessionStorage.setItem('productos', JSON.stringify(productos));
+			alert('Producto editado correctamente');
+			history.push('/');
+		} else {
+			console.log('Bad request');
+		}
 	}
 
 	return (

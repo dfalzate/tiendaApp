@@ -8,6 +8,7 @@ function InformacionPage() {
 	const { productos, setProductos, setMarcas } = React.useContext(ProductosContext);
 	const [producto, setProducto] = React.useState({});
 	const [marca, setMarca] = React.useState({});
+	const [fechaEmbarque, setFechaEmbarque] = React.useState('');
 
 	React.useEffect(() => {
 		getProductos();
@@ -20,6 +21,7 @@ function InformacionPage() {
 			url: `${process.env.REACT_APP_SERVER}/productos`,
 		});
 		setProductos(products.data);
+		sessionStorage.setItem('productos', JSON.stringify(products.data));
 	}
 
 	async function getMarcas() {
@@ -28,6 +30,7 @@ function InformacionPage() {
 			url: `${process.env.REACT_APP_SERVER}/marcas/`,
 		});
 		setMarcas(brands.data);
+		sessionStorage.setItem('marcas', JSON.stringify(brands.data));
 	}
 
 	function handleReferencia(event) {
@@ -37,6 +40,13 @@ function InformacionPage() {
 		});
 		setProducto(productoSeleccionado[0]);
 		setMarca(productoSeleccionado[0].marca);
+		let date = new Date();
+		date.setTime(Date.parse(productoSeleccionado[0].fechaEmbarque));
+		setFechaEmbarque(
+			`${date.getUTCFullYear()}-${
+				date.getUTCMonth() < 10 ? `0${date.getUTCMonth() + 1}` : date.getUTCMonth() + 1
+			}-${date.getUTCDate()}`
+		);
 	}
 
 	return (
@@ -46,26 +56,72 @@ function InformacionPage() {
 			</div>
 			<Form>
 				<SeleccionarProducto onChange={handleReferencia} />
-				<Form.Group controlId='text' className='informacion'>
-					<Form.Label>Talla</Form.Label>
-					<Form.Control plaintext readOnly defaultValue={producto.talla} />
-				</Form.Group>
-				<Form.Group controlId='text' className='informacion'>
-					<Form.Label>Observaciones</Form.Label>
-					<Form.Control plaintext readOnly defaultValue={producto.observaciones} />
-				</Form.Group>
-				<Form.Group controlId='text' className='informacion'>
-					<Form.Label>Marca</Form.Label>
-					<Form.Control plaintext readOnly defaultValue={marca.marca} />
-				</Form.Group>
-				<Form.Group controlId='text' className='informacion'>
-					<Form.Label>Inventario</Form.Label>
-					<Form.Control plaintext readOnly defaultValue={producto.inventario} />
-				</Form.Group>
-				<Form.Group controlId='text' className='informacion'>
-					<Form.Label>Fecha embarque</Form.Label>
-					<Form.Control plaintext readOnly defaultValue={producto.fechaEmbarque} />
-				</Form.Group>
+				<div className='form-group'>
+					<label className='form-label'>Talla</label>
+					<input
+						id='text'
+						type='text'
+						className='form-control'
+						required
+						readOnly
+						value={producto.talla}
+					/>
+				</div>
+				<div className='form-group'>
+					<label className='form-label'>Observaciones</label>
+					<input
+						id='text'
+						type='text'
+						className='form-control'
+						required
+						readOnly
+						value={producto.observaciones}
+					/>
+				</div>
+				<div className='form-group'>
+					<label className='form-label'>Marca</label>
+					<input
+						id='text'
+						type='text'
+						className='form-control'
+						required
+						readOnly
+						value={marca.marca}
+					/>
+				</div>
+				<div className='form-group'>
+					<label className='form-label'>Referencia</label>
+					<input
+						id='text'
+						type='text'
+						className='form-control'
+						required
+						readOnly
+						value={marca.referencia}
+					/>
+				</div>
+				<div className='form-group'>
+					<label className='form-label'>Inventario</label>
+					<input
+						id='number'
+						type='text'
+						className='form-control'
+						required
+						readOnly
+						value={producto.inventario}
+					/>
+				</div>
+				<div className='form-group'>
+					<label className='form-label'>Fecha embarque</label>
+					<input
+						id='date'
+						type='date'
+						className='form-control'
+						required
+						readOnly
+						value={fechaEmbarque}
+					/>
+				</div>
 			</Form>
 		</div>
 	);

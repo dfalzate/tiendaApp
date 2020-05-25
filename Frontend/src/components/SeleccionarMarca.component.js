@@ -11,6 +11,7 @@ function SeleccionarMarcaComponent(props) {
 				id='select'
 				className='form-control'
 				required
+				defaultValue=''
 				onChange={props.onChange}
 				value={props.value}
 			>

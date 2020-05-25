@@ -1,162 +1,80 @@
-import React from "react";
-import ProductosContext from "../context/productos.context";
-import { Form, Button } from "react-bootstrap";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
-import SeleccionarMarcaComponent from "../components/SeleccionarMarca.component";
-
-let date = new Date();
-
-let initialState = {
-  referencia: "",
-  ID: "",
-  nombreProducto: "",
-  precio: 0,
-  peso: 0,
-  categoria: "",
-  stock: 1,
-  fechaCreacion: date.toUTCString(),
-};
+import React from 'react';
+import ProductosContext from '../context/productos.context';
+import { Button } from 'react-bootstrap';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
+import SeleccionarMarca from '../components/SeleccionarMarca.component';
 
 function EditarMarcaPage() {
-  const { productos, setProductos } = React.useContext(ProductosContext);
-  const [producto, setProducto] = React.useState({});
+	const { marcas, setMarcas } = React.useContext(ProductosContext);
+	const [_id, set_id] = React.useState('');
+	const [marca, setMarca] = React.useState({});
+	const [referencia, setReferencia] = React.useState('');
 
-  let history = useHistory();
+	React.useEffect(() => {
+		const brands = JSON.parse(sessionStorage.getItem('marcas'));
+		setMarcas(brands);
+	}, []);
 
-  function handle(e) {
-    const { name, value } = e.target;
-    initialState[name] = value;
-  }
+	let history = useHistory();
 
-  function handleReferencia(event) {
-    const productId = event.target.value;
-    const productoSeleccionado = productos.filter((producto) => {
-      return producto._id === productId;
-    });
-    setProducto(productoSeleccionado[0]);
-    initialState = productoSeleccionado[0];
-    console.log(initialState);
-  }
+	function handleChangeMarca(event) {
+		const marcaId = event.target.value;
+		const marcaSeleccionada = marcas.filter((marca) => {
+			return marca._id === marcaId;
+		})[0];
+		setMarca(marcaSeleccionada);
+		set_id(marcaSeleccionada._id);
+		setReferencia(marcaSeleccionada.referencia);
+	}
 
-  async function handleButton(event) {
-    event.preventDefault();
+	async function handleSubmit(event) {
+		event.preventDefault();
+		let brand = {
+			referencia,
+		};
 
-    const data = initialState;
-    const response = await axios({
-      method: "put",
-      url:
-        `${process.env.REACT_APP_SERVER}/productos/producto/${initialState._id}`,
-      data: data,
-    });
-    if (response.status === 200) {
-      const products = await axios({
-        methods: "get",
-        url: `${process.env.REACT_APP_SERVER}/productos/`,
-      });
-      setProductos(products.data);
-      alert("Producto editado correctamente");
-      history.push("/");
-    } else {
-      alert("Hay un problema");
-    }
-  }
+		const response = await axios({
+			method: 'put',
+			url: `${process.env.REACT_APP_SERVER}/marcas/marca/${_id}`,
+			data: brand,
+		});
+		if (response.status === 200) {
+			const index = marcas.indexOf(marca);
+			marcas[index] = response.data;
+			setMarcas(marcas);
+			sessionStorage.setItem('marcas', JSON.stringify(marcas));
+			alert('Marca editada correctamente');
+			history.push('/');
+		} else {
+			console.log('Bad request');
+		}
+	}
 
-  return (
-    <div className="home">
-      <div className="titulo">
-        <h1>Editar marca</h1>
-      </div>
-      <Form className="formulario">
-        {/* <Form.Group controlId="controlVender" className="informacion">
-          <Form.Label>Referencias</Form.Label>
-          <Form.Control as="select">
-            {productos.length > 0 &&
-              productos.map((producto) => {
-                return (
-                  <option
-                    key={producto._id}
-                    value={producto._id}
-                    onClick={handleReferencia}
-                  >
-                    {producto.referencia}
-                  </option>
-                );
-              })}
-          </Form.Control>
-        </Form.Group> */}
-        <SeleccionarMarcaComponent />
-        <Form.Group controlId="controlCrear" className="informacion">
-          <Form.Label>ID</Form.Label>
-          <Form.Control
-            type="text"
-            name="ID"
-            onChange={handle}
-            defaultValue={producto.ID}
-          >
-          </Form.Control>
-        </Form.Group>
-        <Form.Group controlId="controlCrear" className="informacion">
-          <Form.Label>Nombre del producto</Form.Label>
-          <Form.Control
-            type="text"
-            name="nombreProducto"
-            onChange={handle}
-            defaultValue={producto.nombreProducto}
-          >
-          </Form.Control>
-        </Form.Group>
-        <Form.Group controlId="controlCrear" className="informacion">
-          <Form.Label>Precio</Form.Label>
-          <Form.Control
-            type="number"
-            min="0"
-            onChange={handle}
-            name="precio"
-            defaultValue={producto.precio}
-          />
-        </Form.Group>
-        <Form.Group controlId="controlCrear" className="informacion">
-          <Form.Label>Peso</Form.Label>
-          <Form.Control
-            type="number"
-            min="0"
-            onChange={handle}
-            name="peso"
-            defaultValue={producto.peso}
-          />
-        </Form.Group>
-        <Form.Group controlId="controlCrear" className="informacion">
-          <Form.Label>Categoria</Form.Label>
-          <Form.Control
-            type="text"
-            name="categoria"
-            onChange={handle}
-            defaultValue={producto.categoria}
-          >
-          </Form.Control>
-        </Form.Group>
-        <Form.Group controlId="controlCrear" className="informacion">
-          <Form.Label>Stock</Form.Label>
-          <Form.Control
-            type="number"
-            name="stock"
-            min="1"
-            onChange={handle}
-            defaultValue={producto.stock}
-          >
-          </Form.Control>
-        </Form.Group>
-        <Form.Group controlId="controlCrear" className="informacion">
-          <Form.Label>Fecha de creación</Form.Label>
-          <Form.Label className="form-control-plaintext">
-            {date.toLocaleDateString()}
-          </Form.Label>
-        </Form.Group>
-        <Button onClick={handleButton}>Grabar</Button>
-      </Form>
-    </div>
-  );
+	return (
+		<div className='home'>
+			<div className='titulo'>
+				<h1>Editar marca</h1>
+			</div>
+			<form onSubmit={handleSubmit}>
+				<SeleccionarMarca onChange={handleChangeMarca} />
+				<div className='form-group'>
+					<label className='form-label'>Referencia</label>
+					<input
+						id='text'
+						type='text'
+						className='form-control'
+						required
+						onChange={(e) => setReferencia(e.target.value)}
+						value={referencia}
+					/>
+				</div>
+				<Button type='submit' className='saveButton'>
+					Grabar
+				</Button>
+			</form>
+		</div>
+	);
 }
 
 export default EditarMarcaPage;

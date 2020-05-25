@@ -1,6 +1,5 @@
 import React from 'react';
 import ProductosContext from '../context/productos.context';
-import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import Formulario from '../components/FormularioProducto.component';

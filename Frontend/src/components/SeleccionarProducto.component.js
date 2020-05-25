@@ -1,6 +1,5 @@
 import React from 'react';
 import ProductosContext from '../context/productos.context';
-import { Form } from 'react-bootstrap';
 import axios from 'axios';
 
 function SeleccionarProductoComponent(props) {
@@ -50,29 +49,6 @@ function SeleccionarProductoComponent(props) {
 					})}
 			</select>
 		</div>
-		// <Form.Group controlId="controlInformacion" className="informacion">
-		//   <Form.Label>Producto</Form.Label>
-		//   <Form.Control
-		//     as="select"
-		//     defaultValue=""
-		//     onChange={props.onChange}
-		//   >
-		//     <option value="" disabled>
-		//       Selecciona un producto
-		//     </option>
-		//     {productos.length > 0 &&
-		//       productos.map((producto) => {
-		//         return (
-		//           <option
-		//             key={producto._id}
-		//             value={producto._id}
-		//           >
-		//             {producto.nombre}
-		//           </option>
-		//         );
-		//       })}
-		//   </Form.Control>
-		// </Form.Group>
 	);
 }
 
